@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 
 interface TopicData {
   name: string;
-  key: string;
+  description?: string;
+  image?: string;
 }
 
 interface TopicsJsonData {
@@ -18,39 +19,57 @@ export async function topicsSeed() {
   const topicsRaw = fs.readFileSync(topicsPath, 'utf-8');
   const topicsJson = JSON.parse(topicsRaw) as TopicsJsonData;
   const topics = topicsJson.data;
-// check if topics already exist
 
-    const existingTopics = await prisma.topic.findMany({
-        where: {
-            name: {
-                in: topics.map((t) => t.name),
-            },
-        },
+  for (const topicData of topics) {
+    let topic = await prisma.topic.findFirst({
+      where: {
+        name: topicData.name,
+      },
     });
-    const existingTopicNames = existingTopics.map((t) => t.name);
-    const newTopics = topics
-        .filter((t) => !existingTopicNames.includes(t.name))
-        .map((t) => ({
-            name: t.name,
-            key: t.key,
-        }));
-        if (newTopics.length > 0) {
-            await prisma.topic.createMany({
-                data: newTopics,
-                skipDuplicates: true,
-            });
-            console.log(`✅ ${newTopics.length} new topics seeded`);
-        }
-        else {
-            console.log('⚠️  All topics already exist. Skipping.');
-        }
+
+    if (!topic) {
+      topic = await prisma.topic.create({
+        data: {
+          name: topicData.name,
+          description: topicData.description ?? null,
+          image: topicData.image ?? null,
+        },
+      });
+
+      console.log(`✅ Topic "${topic.name}" created.`);
+    } else {
+      console.log(`⚠️  Topic "${topic.name}" already exists. Skipping.`);
+    }
+
+    const existingSubject = await prisma.subject.findFirst({
+      where: {
+        name: topicData.name,
+        topicId: topic.id,
+      },
+    });
+
+    if (!existingSubject) {
+      await prisma.subject.create({
+        data: {
+          name: topicData.name,
+          description: topicData.description ?? null,
+          image: topicData.image ?? null,
+          topicId: topic.id,
+        },
+      });
+
+      console.log(`✅ Subject "${topicData.name}" created.`);
+    } else {
+      console.log(`⚠️  Subject "${topicData.name}" already exists. Skipping.`);
+    }
+  }
 }
 
 // For running directly
 if (require.main === module) {
   topicsSeed()
-    .catch((e) => {
-      console.error(e);
+    .catch((e: unknown) => {
+      console.error(e instanceof Error ? e.message : e);
       process.exit(1);
     })
     .finally(() => {

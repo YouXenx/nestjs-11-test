@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "subjectName": "Web Development",
+      "subjectName": "Technology",
       "mentorEmail": "mentor@mail.com",
       "title": "Complete Web Development Bootcamp",
       "description": "Learn full-stack web development from scratch",
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "subjectName": "Mobile Development",
+      "subjectName": "Technology",
       "mentorEmail": "mentor@mail.com",
       "title": "React Native Mobile App Development",
       "description": "Build mobile apps for iOS and Android using React Native",
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "subjectName": "UI/UX Design",
+      "subjectName": "Design",
       "mentorEmail": "mentor@mail.com",
       "title": "Modern UI/UX Design with Figma",
       "description": "Design beautiful and user-friendly interfaces",

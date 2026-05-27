@@ -40,6 +40,7 @@ export default tseslint.config(
 
       'no-console': 'off',
       'prefer-const': 'off',
+      'no-undef': 'off',
     },
   },
 );
